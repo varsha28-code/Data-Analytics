@@ -1,0 +1,62 @@
+ DATASET 1: EMPLOYEE HR DATASET
+import pandas as pd
+import numpy as np
+
+employee_data = {
+    'EmpID': [101, 102, 102, 103, 104],
+    'Age': [25, np.nan, np.nan, 150, 30],
+    'Salary': [30000, 40000, 40000, 1000000, np.nan],
+    'Department': ['IT', 'HR', 'HR', 'IT', None],
+    'Gender': ['Male', 'Female', 'Female', None, ' male ']
+}
+
+df_employee = pd.DataFrame(employee_data)
+
+print("Employee HR Dataset (Raw / Dirty Data):")
+print(df_employee)
+❌ Problems
+Duplicate EmpID (102)
+Missing Age, Salary, Gender, Department
+Noise: Age = 150, Salary = 1,000,000
+Inconsistent text: ' male '
+
+ DATASET 2: CUSTOMER SALES DATASET
+sales_data = {
+    'CustomerID': [201, 202, 202, 203, 204],
+    'Product': ['Mobile', 'Laptop', 'Laptop', 'Tablet', 'Mobile'],
+    'Quantity': [1, 2, 2, 100, np.nan],
+    'Price': [15000, 55000, 55000, 20000, 15000]
+}
+
+df_sales = pd.DataFrame(sales_data)
+
+print("\nCustomer Sales Dataset (Raw / Dirty Data):")
+print(df_sales)
+❌ Problems
+Duplicate CustomerID (202)
+Missing Quantity
+Outlier / noise: Quantity = 100 (unrealistic)
+
+ DATASET 3: STUDENT PERFORMANCE DATASET
+student_data = {
+    'StudentID': [1, 2, 2, 3, 4],
+    'Marks': [85, 90, 90, 150, np.nan],
+    'Grade': ['A', 'A', 'A', 'F', None]
+}
+
+df_student = pd.DataFrame(student_data)
+
+print("\nStudent Performance Dataset (Raw / Dirty Data):")
+print(df_student)
+❌ Problems
+Duplicate StudentID (2)
+Missing Marks and Grade
+Noise: Marks = 150 (>100)
+
+HOW TO USE THESE DATASETS
+These three datasets can be used to practice end-to-end data cleaning:
+1.Remove duplicates → drop_duplicates()
+2.Handle missing values → fillna() with mean/median/mode
+3.Remove noise / outliers → IQR or Z-score
+4.Standardize text → .str.strip().str.lower()
+5.Validate domain rules → Age < 100, Marks ≤ 100, Quantity reasonable
