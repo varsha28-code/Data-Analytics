@@ -1,0 +1,673 @@
+DATA PREPROCESSING
+HANDLING MISSING VALUES – ALL METHODS
+=============================================================
+METHOD 1: ROW DELETION
+Definition:Removes entire rows that contain missing values.
+Use Case
+When missing values are very few.
+ Program
+import pandas as pd
+import numpy as np
+
+data = {
+    'Age': [25, 30, np.nan, 40],
+    'Salary': [30000, np.nan, 28000, 45000]
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+df_clean = df.dropna()
+
+print("\nAfter Row Deletion")
+print(df_clean)
+
+METHOD 2: COLUMN DELETION
+ Definition:Removes entire columns containing missing values.
+Use Case
+When a column is not important.
+Program
+import pandas as pd
+import numpy as np
+
+data = {
+    'Age': [25, 30, np.nan],
+    'Salary': [30000, 40000, 50000],
+    'Bonus': [np.nan, np.nan, np.nan]
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+df_clean = df.dropna(axis=1)
+
+print("\nAfter Column Deletion")
+print(df_clean)
+
+METHOD 3: MEAN IMPUTATION
+Definition
+Replaces missing numerical values with the mean.
+ Use Case
+Normal distribution data.
+ Program
+import pandas as pd
+import numpy as np
+
+data = {
+    'Age': [25, 30, np.nan, 40],
+    'Salary': [30000, np.nan, 28000, 45000]
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+df['Age'].fillna(df['Age'].mean(), inplace=True)
+df['Salary'].fillna(df['Salary'].mean(), inplace=True)
+
+print("\nAfter Mean Imputation")
+print(df)
+METHOD 4: MEDIAN IMPUTATION
+Definition
+Replaces missing values with median.
+Use Case
+Data contains outliers.
+ Program
+import pandas as pd
+import numpy as np
+
+data = {
+    'Salary': [30000, 35000, np.nan, 1000000]
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+df['Salary'].fillna(df['Salary'].median(), inplace=True)
+
+print("\nAfter Median Imputation")
+print(df)
+
+METHOD 5: MODE IMPUTATION (CATEGORICAL)
+Definition
+Replaces missing categorical values with most frequent value.
+Use Case
+Text or category columns.
+Program
+import pandas as pd
+import numpy as np
+
+data = {
+    'Gender': ['Male', 'Female', None, 'Male']
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+df['Gender'].fillna(df['Gender'].mode()[0], inplace=True)
+
+print("\nAfter Mode Imputation")
+print(df)
+
+ METHOD 6: CONSTANT VALUE IMPUTATION
+ Definition
+Replaces missing values with a fixed constant.
+Use Case
+Missing value itself has meaning.
+Complete Program
+import pandas as pd
+import numpy as np
+
+data = {
+    'Experience': [5, np.nan, 10, np.nan]
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+df['Experience'].fillna(0, inplace=True)
+
+print("\nAfter Constant Imputation")
+print(df)
+
+ METHOD 7: FORWARD FILL (FFILL)
+ Definition
+Fills missing values using previous row value.
+ Use Case
+Time-series data.
+ Program
+import pandas as pd
+import numpy as np
+
+data = {
+    'Temperature': [30, np.nan, np.nan, 35]
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+df.fillna(method='ffill', inplace=True)
+
+print("\nAfter Forward Fill")
+print(df)
+ METHOD 8: BACKWARD FILL (BFILL)
+ Definition
+Fills missing values using next row value.
+Use Case
+Sequential data.
+Program
+import pandas as pd
+import numpy as np
+
+data = {
+    'Temperature': [np.nan, np.nan, 32, 35]
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+df.fillna(method='bfill', inplace=True)
+
+print("\nAfter Backward Fill")
+print(df)
+
+METHOD 9: NUMPY where() METHOD
+Definition
+Conditional replacement of missing values.
+ Use Case
+Custom logic needed.
+ Program
+import pandas as pd
+import numpy as np
+
+data = {
+    'Marks': [80, np.nan, 70, np.nan]
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+df['Marks'] = np.where(
+    df['Marks'].isnull(),
+    df['Marks'].mean(),
+    df['Marks']
+)
+
+print("\nAfter NumPy where()")
+print(df)
+
+METHOD 10: NUMPY nan_to_num()
+Definition
+Converts NaN to zero or specified value.
+Use Case
+Mathematical operations.
+ Program
+import pandas as pd
+import numpy as np
+
+data = {
+    'Profit': [1000, np.nan, 2000]
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+df['Profit'] = np.nan_to_num(df['Profit'], nan=0)
+
+print("\nAfter nan_to_num()")
+print(df)
+
+ METHOD 11: INTERPOLATION
+ Definition
+Estimates missing values using linear trend.
+Use Case
+Continuous numerical data.
+ Program
+import pandas as pd
+import numpy as np
+
+data = {
+    'Sales': [100, np.nan, np.nan, 400]
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+df['Sales'] = df['Sales'].interpolate()
+
+print("\nAfter Interpolation")
+print(df)
+
+WHAT IS NOISE IN DATA?
+Definition
+Noise is random, incorrect, or meaningless data that does not represent the true pattern.
+Examples
+Extremely high/low values
+Typing errors (99999 salary)
+Measurement errors
+ Why Remove Noise?
+Improves model accuracy
+Reduces overfitting
+Produces reliable insights
+
+ METHOD 1: NOISE REMOVAL USING IQR (INTERQUARTILE RANGE)
+Definition
+IQR detects noise (outliers) using Q1 and Q3.
+IQR=Q3−Q1IQR = Q3 - Q1IQR=Q3−Q1 
+Outliers lie outside:
+Lower Bound = Q1 − 1.5 × IQR
+Upper Bound = Q3 + 1.5 × IQR
+
+PROGRAM (IQR METHOD)
+import pandas as pd
+import numpy as np
+
+data = {
+    'Salary': [25000, 28000, 30000, 32000, 1000000]
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+Q1 = df['Salary'].quantile(0.25)
+Q3 = df['Salary'].quantile(0.75)
+IQR = Q3 - Q1
+
+lower = Q1 - 1.5 * IQR
+upper = Q3 + 1.5 * IQR
+
+df_clean = df[(df['Salary'] >= lower) & (df['Salary'] <= upper)]
+
+print("\nAfter Noise Removal using IQR")
+print(df_clean)
+Output Explanation
+Extreme salary (1000000) is removed.
+
+ METHOD 2: NOISE REMOVAL USING Z-SCORE
+ Definition
+Z-score measures how far a value is from the mean.
+
+ PROGRAM (Z-SCORE METHOD)
+import pandas as pd
+import numpy as np
+
+data = {
+    'Marks': [65, 70, 72, 68, 500]
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+mean = df['Marks'].mean()
+std = df['Marks'].std()
+
+df['Z_score'] = (df['Marks'] - mean) / std
+
+df_clean = df[abs(df['Z_score']) <= 3]
+
+print("\nAfter Noise Removal using Z-Score")
+print(df_clean)
+Output Explanation
+Value 500 is detected as noise and removed.
+
+METHOD 3: CAPPING (WINSORIZATION)
+ Definition
+Replaces extreme values with upper or lower limits instead of removing them.
+
+PROGRAM (CAPPING)
+import pandas as pd
+import numpy as np
+
+data = {
+    'Income': [20000, 25000, 30000, 35000, 999999]
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+upper_limit = df['Income'].quantile(0.95)
+lower_limit = df['Income'].quantile(0.05)
+
+df['Income'] = np.where(df['Income'] > upper_limit, upper_limit, df['Income'])
+df['Income'] = np.where(df['Income'] < lower_limit, lower_limit, df['Income'])
+
+print("\nAfter Noise Removal using Capping")
+print(df)
+Output Explanation
+Extreme value replaced by boundary value.
+
+ METHOD 4: BINNING (SMOOTHING BY MEAN)
+ Definition
+Divides data into bins and replaces values using mean.
+
+ PROGRAM (BINNING)
+import pandas as pd
+import numpy as np
+
+data = {
+    'Temperature': [30, 32, 31, 80, 33]
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+df['Binned'] = pd.cut(df['Temperature'], bins=3)
+df['Smoothed'] = df.groupby('Binned')['Temperature'].transform('mean')
+
+print("\nAfter Noise Smoothing using Binning")
+print(df)
+Output Explanation
+Extreme temperature value is smoothed.
+
+ METHOD 5: LOG TRANSFORMATION
+ Definition
+Reduces impact of large values by applying logarithm.
+
+ COMPLETE PROGRAM (LOG TRANSFORMATION)
+import pandas as pd
+import numpy as np
+
+data = {
+    'Sales': [100, 200, 300, 100000]
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+df['Log_Sales'] = np.log(df['Sales'])
+
+print("\nAfter Log Transformation")
+print(df)
+ Output Explanation
+Large values are scaled down smoothly.
+
+ METHOD 6: MOVING AVERAGE (TIME-SERIES NOISE)
+ Definition
+Smooths random fluctuations using rolling mean.
+
+ PROGRAM (MOVING AVERAGE)
+import pandas as pd
+import numpy as np
+
+data = {
+    'Stock_Price': [100, 105, 300, 110, 108]
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+df['Smoothed'] = df['Stock_Price'].rolling(window=3).mean()
+
+print("\nAfter Noise Smoothing using Moving Average")
+print(df)
+Output Explanation
+Sudden spike is smoothed.
+
+ METHOD 7: MANUAL THRESHOLD FILTERING
+ Definition
+Removes values outside acceptable domain limits.
+
+ COMPLETE PROGRAM (THRESHOLD METHOD)
+import pandas as pd
+import numpy as np
+
+data = {
+    'Age': [25, 30, 150, 35]
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+df_clean = df[(df['Age'] >= 0) & (df['Age'] <= 100)]
+
+print("\nAfter Noise Removal using Threshold")
+print(df_clean)
+Output Explanation
+Age 150 removed.
+
+ SUMMARY TABLE
+Method	Best Use
+IQR	Skewed data
+Z-Score	Normal data
+Capping	Preserve data
+Binning	Smoothing
+Log transform	High variance
+Moving average	Time series
+Threshold	Domain rules
+
+
+ WHAT IS DATA REDUNDANCY?
+ Definition
+Data redundancy occurs when the same or very similar data is stored multiple times unnecessarily.
+ Problems Caused
+Increased storage cost
+Data inconsistency
+Slower processing
+Poor model performance
+ Goal
+Identify and eliminate duplicate or repetitive information without losing meaning.
+
+TYPE 1: EXACT DUPLICATE RECORDS
+ Definition
+Rows that are completely identical across all columns.
+
+ METHOD 1: REMOVE EXACT DUPLICATE ROWS
+ Program
+import pandas as pd
+
+data = {
+    'ID': [1, 2, 2, 3],
+    'Name': ['A', 'B', 'B', 'C'],
+    'Salary': [30000, 40000, 40000, 50000]
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+df_clean = df.drop_duplicates()
+
+print("\nAfter Removing Exact Duplicate Rows")
+print(df_clean)
+Output Explanation
+Duplicate row for ID 2 is removed.
+
+ TYPE 2: DUPLICATES BASED ON SPECIFIC COLUMNS
+ Definition
+Rows duplicate based on key attributes.
+
+ METHOD 2: REMOVE DUPLICATES USING SUBSET
+ Complete Program
+import pandas as pd
+
+data = {
+    'EmpID': [101, 102, 102, 103],
+    'Name': ['Ram', 'Shyam', 'Shyam', 'Geeta'],
+    'City': ['Delhi', 'Delhi', 'Delhi', 'Mumbai']
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+df_clean = df.drop_duplicates(subset=['EmpID'])
+
+print("\nAfter Removing Redundancy Based on EmpID")
+print(df_clean)
+Output Explanation
+Duplicate EmpID removed.
+
+ TYPE 3: PARTIAL REDUNDANCY
+ Definition
+Some columns repeat same information unnecessarily.
+
+ METHOD 3: REMOVE REDUNDANT COLUMNS
+ Program
+import pandas as pd
+
+data = {
+    'City': ['Delhi', 'Mumbai', 'Chennai'],
+    'City_Name': ['Delhi', 'Mumbai', 'Chennai']
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+df_clean = df.drop(columns=['City_Name'])
+
+print("\nAfter Removing Redundant Column")
+print(df_clean)
+Output Explanation
+City_Name removed as redundant.
+
+ FUNCTIONAL DEPENDENCY REDUNDANCY
+Definition
+One column is fully dependent on another.
+
+ METHOD 4: ELIMINATE FUNCTIONAL DEPENDENCY
+ Program
+import pandas as pd
+
+data = {
+    'EmpID': [1, 2, 3],
+    'Department': ['IT', 'HR', 'IT'],
+    'Dept_Code': [101, 102, 101]
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+df_clean = df.drop(columns=['Dept_Code'])
+
+print("\nAfter Removing Functionally Dependent Column")
+print(df_clean)
+ Output Explanation
+Dept_Code depends on Department, removed.
+
+TYPE 5: STRING DUPLICATES DUE TO CASE / SPACES
+ Definition
+Same text appears different due to formatting.
+
+ METHOD 5: STANDARDIZE TEXT TO REMOVE REDUNDANCY
+ Program
+import pandas as pd
+
+data = {
+    'City': ['Delhi', 'delhi ', 'DELHI', 'Mumbai']
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+df['City'] = df['City'].str.strip().str.lower()
+
+df_clean = df.drop_duplicates()
+
+print("\nAfter Standardizing and Removing Redundancy")
+print(df_clean)
+Output Explanation
+Different versions of “Delhi” merged into one.
+
+TYPE 6: NUMERIC REDUNDANCY (ROUNDING)
+ Definition
+Same numeric values stored with minor differences.
+
+ METHOD 6: ROUNDING TO REMOVE REDUNDANCY
+ Complete Program
+import pandas as pd
+
+data = {
+    'Weight': [70.001, 70.002, 69.999, 75.0]
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+df['Weight'] = df['Weight'].round(1)
+
+df_clean = df.drop_duplicates()
+
+print("\nAfter Removing Numeric Redundancy")
+print(df_clean)
+Output Explanation
+Minor variations merged.
+
+ TYPE 7: AGGREGATION-BASED REDUNDANCY
+ Definition
+Multiple rows represent same entity.
+
+ METHOD 7: AGGREGATE TO REMOVE REDUNDANCY
+ Complete Program
+import pandas as pd
+
+data = {
+    'Customer': ['A', 'A', 'B'],
+    'Purchase': [100, 150, 200]
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+df_clean = df.groupby('Customer', as_index=False)['Purchase'].sum()
+
+print("\nAfter Aggregation")
+print(df_clean)
+Output Explanation
+Multiple records per customer combined.
+
+ TYPE 8: CORRELATED FEATURE REDUNDANCY
+ Definition
+Highly correlated columns provide same information.
+
+ METHOD 8: REMOVE HIGHLY CORRELATED FEATURES
+ Complete Program
+import pandas as pd
+
+data = {
+    'Height_cm': [160, 170, 180],
+    'Height_m': [1.6, 1.7, 1.8]
+}
+
+df = pd.DataFrame(data)
+print("Original Data")
+print(df)
+
+df_clean = df.drop(columns=['Height_m'])
+
+print("\nAfter Removing Correlated Feature")
+print(df_clean)
+Output Explanation
+Height in meters removed.
+
+ SUMMARY TABLE
+Redundancy Type	Removal Method
+Exact duplicates	drop_duplicates()
+Key-based	subset
+Partial	drop column
+Functional dependency	normalization
+Text formatting	standardization
+Numeric noise	rounding
+Repeated entities	aggregation
+Correlated features	feature selection
